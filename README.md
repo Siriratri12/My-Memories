@@ -1,8 +1,8 @@
 # My Memories — ระบบบันทึกความจำ
 
-My Memories เป็นเว็บแอปพลิเคชันสำหรับบันทึกและจัดการความจำ ผู้ใช้งานสามารถสมัครสมาชิก เข้าสู่ระบบ เพิ่ม แสดง ค้นหา แก้ไข และลบความจำ รวมถึงดูและแก้ไขข้อมูลโปรไฟล์ของตนเองได้
+My Memories เป็นเว็บแอปพลิเคชันสำหรับบันทึกและจัดการความจำส่วนตัว ผู้ใช้งานสามารถสมัครสมาชิก เข้าสู่ระบบ เพิ่ม แสดง ค้นหา แก้ไข และลบความจำ รวมถึงดูและแก้ไขข้อมูลโปรไฟล์ของตนเองได้
 
-ระบบพัฒนาด้วย Vue 3 และ TypeScript สำหรับส่วน Frontend และ Node.js ร่วมกับ Express สำหรับส่วน Backend โดยใช้ PostgreSQL เป็นฐานข้อมูล Prisma สำหรับจัดการข้อมูล และ Docker Compose สำหรับรันระบบทั้งหมดร่วมกัน
+ระบบพัฒนาด้วย Vue 3 และ TypeScript สำหรับส่วน Frontend และ Node.js ร่วมกับ Express และ TypeScript สำหรับส่วน Backend โดยใช้ PostgreSQL เป็นฐานข้อมูล Prisma สำหรับจัดการข้อมูล และ Docker Compose สำหรับรันระบบทั้งหมดร่วมกัน
 
 ## 1. คุณสมบัติของระบบ (Features)
 
@@ -59,7 +59,6 @@ memory-app/
 │   │   ├── authRoutes.ts
 │   │   └── server.ts
 │   ├── Dockerfile
-│   ├── .env
 │   ├── .gitignore
 │   ├── package.json
 │   ├── package-lock.json
@@ -95,19 +94,19 @@ memory-app/
 │   └── vite.config.ts
 │
 ├── docker-compose.yml
-├── .env
+├── .gitignore
+├── .env.example
 └── README.md
 ```
 
-หมายเหตุ: โครงสร้างด้านบนแสดงไฟล์สำคัญของโปรเจกต์ โดยไม่รวมโฟลเดอร์ที่เกิดจากการติดตั้งหรือ Build เช่น `node_modules` และ `dist`
+**หมายเหตุ:** โครงสร้างด้านบนแสดงไฟล์สำคัญของโปรเจกต์ โดยไม่รวมโฟลเดอร์ที่เกิดจากการติดตั้งหรือ Build เช่น `node_modules` และ `dist` ส่วนไฟล์ `.env` ที่มีข้อมูลลับจะไม่ถูกจัดเก็บใน Git Repository
 
 ## 4. สิ่งที่ต้องติดตั้งก่อนใช้งาน (Prerequisites)
 
 ผู้ใช้งานควรติดตั้งโปรแกรมดังต่อไปนี้
 
-- Docker
-- Docker Compose
-- Git (สำหรับ Clone โปรเจกต์ หากจัดเก็บไว้ใน Git Repository)
+- Docker Desktop หรือ Docker Engine พร้อม Docker Compose
+- Git สำหรับ Clone โปรเจกต์
 
 สามารถตรวจสอบการติดตั้ง Docker ได้ด้วยคำสั่ง
 
@@ -118,46 +117,91 @@ docker compose version
 
 ## 5. การตั้งค่า Environment Variables
 
-โปรเจกต์ใช้ไฟล์ `.env` สำหรับจัดเก็บค่าการตั้งค่าของระบบ โดยมีตำแหน่งไฟล์ดังนี้
+โปรเจกต์ใช้ Environment Variables สำหรับกำหนดค่าการเชื่อมต่อฐานข้อมูล PostgreSQL, JWT Secret และ Port ของแต่ละ Service
 
-```text
-memory-app/.env
-memory-app/backend/.env
+เพื่อความปลอดภัย ไฟล์ `.env` ที่มีข้อมูลลับจะไม่ถูกอัปโหลดขึ้น GitHub โดยจัดเตรียมไฟล์ `.env.example` สำหรับเป็นตัวอย่างการตั้งค่าแทน
+
+### ขั้นตอนที่ 1: สร้างไฟล์ `.env`
+
+หลังจาก Clone โปรเจกต์ ให้เปิด Terminal ในโฟลเดอร์หลัก แล้วรัน
+
+```bash
+cp .env.example .env
 ```
 
-ค่าการตั้งค่าที่เกี่ยวข้องกับระบบอาจประกอบด้วยการเชื่อมต่อฐานข้อมูล PostgreSQL, JWT Secret และค่ากำหนดอื่น ๆ ของ Backend
+### ขั้นตอนที่ 2: กำหนดค่าการเชื่อมต่อ
 
-ก่อนเริ่มระบบต้องตรวจสอบว่ามี Environment Variables ที่จำเป็นครบถ้วน และค่าที่กำหนดสอดคล้องกับ `docker-compose.yml` และการตั้งค่า Backend
+เปิดไฟล์ `.env` และกำหนดค่าตามตัวอย่าง
 
-**ข้อควรระวัง:** ไม่ควรเผยแพร่ไฟล์ `.env` ที่มีรหัสผ่านหรือข้อมูลลับลงใน Public Repository ควรจัดเตรียมไฟล์ตัวอย่าง `.env.example` สำหรับผู้ที่ต้องการติดตั้งโปรเจกต์
+```dotenv
+POSTGRES_USER=memory_user
+POSTGRES_PASSWORD=replace_with_a_secure_password
+POSTGRES_DB=memories_db
+
+POSTGRES_PORT=5433
+BACKEND_PORT=5001
+FRONTEND_PORT=5174
+
+JWT_SECRET=replace_with_a_long_random_secret
+```
+
+**คำอธิบายตัวแปร**
+
+| ตัวแปร              | รายละเอียด                                                   |
+| ------------------- | ------------------------------------------------------------ |
+| `POSTGRES_USER`     | ชื่อผู้ใช้งาน PostgreSQL                                     |
+| `POSTGRES_PASSWORD` | รหัสผ่าน PostgreSQL                                          |
+| `POSTGRES_DB`       | ชื่อฐานข้อมูล                                                |
+| `POSTGRES_PORT`     | Port สำหรับ PostgreSQL หากมีการเปิดให้เข้าถึงจากเครื่อง Host |
+| `BACKEND_PORT`      | Port สำหรับ Backend API                                      |
+| `FRONTEND_PORT`     | Port สำหรับ Frontend                                         |
+| `JWT_SECRET`        | Secret Key สำหรับสร้างและตรวจสอบ JWT                         |
+
+ควรเปลี่ยน `POSTGRES_PASSWORD` และ `JWT_SECRET` ให้เป็นค่าที่ปลอดภัยก่อนเริ่มระบบ
+
+สามารถสร้างค่าสุ่มด้วยคำสั่ง
+
+```bash
+openssl rand -hex 24
+openssl rand -hex 32
+```
+
+โดยนำค่าที่ได้ไปกำหนดเป็นรหัสผ่าน PostgreSQL และ JWT Secret ตามลำดับ
+
+**หมายเหตุ:** สำหรับการรันผ่าน Docker Compose ระบบกำหนด `DATABASE_URL` ให้ Backend จากตัวแปรใน `.env` หลัก จึงไม่จำเป็นต้องสร้าง `backend/.env` เพิ่มสำหรับการใช้งานผ่าน Docker ตามการตั้งค่าปัจจุบัน
+
+**ข้อควรระวัง:** ไม่ควร Commit หรือ Push ไฟล์ `.env` ที่มีรหัสผ่านหรือข้อมูลลับขึ้น Public Repository
 
 ## 6. วิธีติดตั้งและเริ่มต้นใช้งาน (Installation & Setup)
 
-### ขั้นตอนที่ 1: เปิดโฟลเดอร์โปรเจกต์
-
-เปิด Terminal และเข้าไปยังโฟลเดอร์หลักของโปรเจกต์
+### ขั้นตอนที่ 1: Clone โปรเจกต์
 
 ```bash
-cd memory-app
+git clone https://github.com/Siriratri12/My-Memories.git
+cd My-Memories
 ```
 
-### ขั้นตอนที่ 2: ตรวจสอบ Environment Variables
+### ขั้นตอนที่ 2: สร้างไฟล์ Environment Variables
 
-ตรวจสอบไฟล์ `.env` และการตั้งค่าที่จำเป็นก่อนเริ่มระบบ
+```bash
+cp .env.example .env
+```
 
-### ขั้นตอนที่ 3: Build และรัน Docker Compose
+เปิดไฟล์ `.env` และกำหนด `POSTGRES_PASSWORD` และ `JWT_SECRET` ให้เรียบร้อยตามหัวข้อที่ 5
+
+### ขั้นตอนที่ 3: Build และเริ่มระบบด้วย Docker Compose
 
 ```bash
 docker compose up -d --build
 ```
 
-คำสั่งนี้ใช้สำหรับ Build และเริ่มต้น Services ของระบบ ได้แก่
+คำสั่งนี้ใช้สำหรับ Build และเริ่มต้น Services ทั้งหมด ได้แก่
 
 - `frontend` — ส่วนติดต่อผู้ใช้งาน
 - `backend` — REST API
 - `db` — PostgreSQL Database
 
-### ขั้นตอนที่ 4: ตรวจสอบสถานะ Container
+### ขั้นตอนที่ 4: ตรวจสอบสถานะ Containers
 
 ```bash
 docker compose ps
@@ -165,9 +209,19 @@ docker compose ps
 
 ควรพบว่า Frontend, Backend และ Database ทำงานอยู่ และ PostgreSQL อยู่ในสถานะ Healthy
 
+### ขั้นตอนที่ 5: ทดสอบการเชื่อมต่อ
+
+เปิดเว็บไซต์ My Memories ผ่าน Browser และทดลองสมัครสมาชิก เข้าสู่ระบบ และบันทึกความจำ
+
+หากพบปัญหา สามารถตรวจสอบ Logs ได้ด้วยคำสั่ง
+
+```bash
+docker compose logs --tail=100 backend
+```
+
 ## 7. การเข้าใช้งานระบบ
 
-หลังจาก Docker Compose ทำงานสำเร็จ สามารถเข้าใช้งานผ่าน URL ดังต่อไปนี้
+เมื่อ Docker Compose ทำงานสำเร็จ สามารถเข้าใช้งานผ่าน URL ต่อไปนี้ โดยอ้างอิงค่า Port ตัวอย่างใน `.env.example`
 
 | บริการ                    | URL                             |
 | ------------------------- | ------------------------------- |
@@ -190,9 +244,7 @@ docker compose ps
 
 ระบบมีเอกสาร REST API ผ่าน Swagger UI
 
-เปิดใช้งานได้ที่
-
-http://localhost:5001/api-docs/
+**URL:** http://localhost:5001/api-docs/
 
 ### Authentication API
 
@@ -204,8 +256,8 @@ http://localhost:5001/api-docs/
 
 ### Memory API
 
-| Method | Endpoint             | รายละเอียด            |
-| ------ | -------------------- | --------------------- |
+| Method | Endpoint             | รายละเอียด         |
+| ------ | -------------------- | ------------------ |
 | GET    | `/api/memories`      | แสดงและค้นหาความจำ |
 | POST   | `/api/memories`      | เพิ่มความจำ        |
 | GET    | `/api/memories/{id}` | ดูรายละเอียดความจำ |
@@ -229,12 +281,12 @@ http://localhost:5001/api-docs/
 
 ระบบใช้ PostgreSQL 16 สำหรับจัดเก็บข้อมูล โดยใช้ Prisma ในการจัดการโครงสร้างฐานข้อมูล
 
-จากการตรวจสอบ พบตารางหลักดังนี้
+ตารางหลักที่ตรวจสอบพบ ได้แก่
 
 | ตาราง                | รายละเอียด                      |
 | -------------------- | ------------------------------- |
 | `User`               | ข้อมูลบัญชีผู้ใช้งาน            |
-| `Memory`             | ข้อมูลความจำ                 |
+| `Memory`             | ข้อมูลความจำ                    |
 | `_prisma_migrations` | ประวัติการ Migration ของ Prisma |
 
 ### โครงสร้างข้อมูลความจำ
@@ -275,12 +327,12 @@ docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SEL
 
 | Test Case | รายการทดสอบ                                 | ผล   |
 | --------- | ------------------------------------------- | ---- |
-| TC-01     | เพิ่มความจำ                              | PASS |
-| TC-02     | แสดงรายการความจำ                         | PASS |
-| TC-03     | ค้นหาความจำ                              | PASS |
+| TC-01     | เพิ่มความจำ                                 | PASS |
+| TC-02     | แสดงรายการความจำ                            | PASS |
+| TC-03     | ค้นหาความจำ                                 | PASS |
 | TC-04     | ตรวจสอบข้อมูลหลังรีเฟรช                     | PASS |
-| TC-05     | แก้ไขความจำ                              | PASS |
-| TC-06     | ลบความจำ                                 | PASS |
+| TC-05     | แก้ไขความจำ                                 | PASS |
+| TC-06     | ลบความจำ                                    | PASS |
 | TC-07     | เข้าสู่ระบบและตรวจสอบรหัสผ่านผิด            | PASS |
 | TC-08     | สมัครสมาชิกและป้องกันอีเมลซ้ำ               | PASS |
 | TC-09     | แสดงและแก้ไขโปรไฟล์                         | PASS |
@@ -288,7 +340,7 @@ docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SEL
 | TC-11     | ตรวจสอบ PostgreSQL                          | PASS |
 | TC-12     | ตรวจสอบ Docker Compose และโครงสร้างโปรเจกต์ | PASS |
 
-**สรุปผล:** ระบบผ่านการทดสอบตาม Test Cases ทั้ง 12 รายการที่ดำเนินการ โดยเป็นผลจากการทดสอบด้วยตนเอง ไม่ใช่การทดสอบอัตโนมัติหรือการรับรองความปลอดภัยทั้งหมด
+**สรุปผล:** ระบบผ่านการทดสอบทั้ง 12 รายการที่ดำเนินการ โดยเป็นผลจากการทดสอบด้วยตนเอง ไม่ใช่การทดสอบอัตโนมัติหรือการรับรองความปลอดภัยทั้งหมด
 
 ## 11. คำสั่ง Docker ที่ใช้บ่อย
 
@@ -298,7 +350,7 @@ docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SEL
 docker compose up -d --build
 ```
 
-### ตรวจสอบ Container
+### ตรวจสอบ Containers
 
 ```bash
 docker compose ps
@@ -328,10 +380,10 @@ docker compose down
 docker compose up -d
 ```
 
-**ข้อควรระวัง:** หลีกเลี่ยงการใช้ `docker compose down -v` หากไม่ต้องการลบ Docker Volumes ที่อาจมีข้อมูลฐานข้อมูลอยู่
+**ข้อควรระวัง:** หลีกเลี่ยงการใช้ `docker compose down -v` หากไม่ต้องการลบ Docker Volumes ที่เก็บข้อมูลฐานข้อมูล
 
-## 12. สรุปMy Memories
+## 12. สรุป
 
-My Memories เป็นเว็บแอปพลิเคชันแบบ Full Stack ที่พัฒนาขึ้นเพื่อจัดการความจำ รองรับการสมัครสมาชิก การเข้าสู่ระบบด้วย JWT การจัดการข้อมูลความจำแบบ CRUD การจัดการโปรไฟล์ และการจัดเก็บข้อมูลลง PostgreSQL
+My Memories เป็นเว็บแอปพลิเคชันที่พัฒนาขึ้นเพื่อบันทึกและจัดการความจำส่วนตัว รองรับการสมัครสมาชิก การเข้าสู่ระบบด้วย JWT การเพิ่ม แสดง ค้นหา แก้ไข และลบข้อมูลความจำ รวมถึงการจัดการข้อมูลโปรไฟล์ของผู้ใช้งาน โดยจัดเก็บข้อมูลในฐานข้อมูล PostgreSQL
 
-ระบบสามารถเริ่มใช้งานผ่าน Docker Compose และมี Swagger UI สำหรับตรวจสอบและทดสอบ REST API ช่วยให้สามารถติดตั้ง ทดสอบ และพัฒนาระบบต่อยอดได้สะดวก
+ระบบสามารถติดตั้งและเริ่มใช้งานผ่าน Docker Compose พร้อมเอกสาร REST API ผ่าน Swagger UI เพื่ออำนวยความสะดวกในการตรวจสอบ ทดสอบ และพัฒนาระบบต่อยอด
